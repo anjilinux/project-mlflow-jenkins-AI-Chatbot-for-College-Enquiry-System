@@ -21,7 +21,7 @@ pipeline {
         IMAGE_NAME = "college-enquiry-chatbot"
         IMAGE_TAG = "latest"
 
-        MODEL_PATH = "artifacts/model.pkl"
+        MODEL_PATH = "model.pkl"
         VECTORIZER_PATH = "artifacts/vectorizer.pkl"
 
         PYTHONPATH = "${WORKSPACE}"

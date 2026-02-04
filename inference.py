@@ -3,7 +3,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-model = joblib.load("artifacts/model.pkl")
+model = joblib.load("model.pkl")
 vectorizer = joblib.load("artifacts/vectorizer.pkl")
 
 def predict_intent(text: str):
