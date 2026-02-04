@@ -60,7 +60,7 @@ pipeline {
                     venv/bin/python - <<EOF
 import pandas as pd
 
-df = pd.read_csv("data/raw/college_faq.csv")
+df = pd.read_csv("college_faq.csv")
 
 if not {"question", "intent"}.issubset(df.columns):
     raise ValueError("Missing required columns")
