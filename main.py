@@ -4,8 +4,8 @@ import joblib
 app = FastAPI(title="AI College Enquiry Chatbot")
 
 # Load artifacts once at startup
-model = joblib.load("artifacts/model.pkl")
-vectorizer = joblib.load("artifacts/vectorizer.pkl")
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
 
 @app.get("/health")
