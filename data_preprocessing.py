@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 def preprocess():
-    df = pd.read_csv("data/processed/clean_data.csv")
+    df = pd.read_csv("clean_data.csv")
 
     required_cols = {"question", "intent"}
     if not required_cols.issubset(df.columns):
@@ -13,7 +13,7 @@ def preprocess():
     df["question"] = df["question"].str.lower().str.strip()
     df.dropna(inplace=True)
 
-    df.to_csv("data/processed/clean_data.csv", index=False)
+    df.to_csv("clean_data.csv", index=False)
     logging.info("Preprocessing completed")
 
 if __name__ == "__main__":
