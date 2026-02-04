@@ -22,7 +22,7 @@ pipeline {
         IMAGE_TAG = "latest"
 
         MODEL_PATH = "model.pkl"
-        VECTORIZER_PATH = "artifacts/vectorizer.pkl"
+        VECTORIZER_PATH = "vectorizer.pkl"
 
         PYTHONPATH = "${WORKSPACE}"
     }
