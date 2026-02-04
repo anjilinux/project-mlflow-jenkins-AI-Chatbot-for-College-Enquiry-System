@@ -1,20 +1,26 @@
 from fastapi import FastAPI
-import pickle
+import joblib
 
-app = FastAPI()
+app = FastAPI(title="AI College Enquiry Chatbot")
 
-model = pickle.load(open("artifacts/model.pkl", "rb"))
-vectorizer = pickle.load(open("artifacts/vectorizer.pkl", "rb"))
+# Load artifacts once at startup
+model = joblib.load("artifacts/model.pkl")
+vectorizer = joblib.load("artifacts/vectorizer.pkl")
 
-RESPONSES = {
-    "courses": "We offer B.Tech, M.Tech, MBA.",
-    "admission": "Admissions are through entrance exams.",
-    "fees": "Hostel fees are ₹80,000 per year.",
-    "placements": "We have 95% placement record."
-}
 
-@app.post("/chat")
-def chat(query: str):
-    X = vectorizer.transform([query])
-    intent = model.predict(X)[0]
-    return {"response": RESPONSES.get(intent, "Please contact admin.")}
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/predict")
+def predict(payload: dict):
+    question = payload.get("question")
+
+    if not question:
+        return {"error": "Question is required"}
+
+    X = vectorizer.transform([question.lower().strip()])
+    prediction = model.predict(X)[0]
+
+    return {"intent": prediction}
