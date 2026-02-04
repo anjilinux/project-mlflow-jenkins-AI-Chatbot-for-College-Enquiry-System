@@ -13,3 +13,10 @@ joblib
 mlflow
 pytest
 httpx
+pandas
+fastapi
+uvicorn
+scikit-learn
+pytest
+httpx
+mlflow
