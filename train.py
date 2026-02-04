@@ -1,32 +1,29 @@
+import pandas as pd
+import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 import mlflow
 import mlflow.sklearn
-import pandas as pd
-import pickle
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+def train():
+    df = pd.read_csv("clean_data.csv")
 
-from src.features.feature_engineering import vectorize
+    X = df["question"]
+    y = df["intent"]
 
-mlflow.set_experiment("College_Chatbot")
+    vectorizer = TfidfVectorizer()
+    X_vec = vectorizer.fit_transform(X)
 
-df = pd.read_csv("data/processed/train.csv")
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_vec, y)
 
-X = vectorize(df["question"])
-y = df["intent"]
+    joblib.dump(model, "model.pkl")
+    joblib.dump(vectorizer, "vectorizer.pkl")
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    mlflow.log_artifact("model.pkl")
+    mlflow.log_artifact("vectorizer.pkl")
 
-with mlflow.start_run():
-    model = LogisticRegression()
-    model.fit(X_train, y_train)
+    print("✅ Model trained successfully")
 
-    preds = model.predict(X_test)
-    acc = accuracy_score(y_test, preds)
-
-    mlflow.log_metric("accuracy", acc)
-    mlflow.sklearn.log_model(model, "model")
-
-    with open("artifacts/model.pkl", "wb") as f:
-        pickle.dump(model, f)
+if __name__ == "__main__":
+    train()
