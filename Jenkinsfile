@@ -55,7 +55,7 @@ pipeline {
                     set -e
                     echo "🔍 Validating dataset..."
 
-                    test -f data/raw/college_faq.csv || (echo "CSV missing" && exit 1)
+                    test -f college_faq.csv || (echo "CSV missing" && exit 1)
 
                     venv/bin/python - <<EOF
 import pandas as pd
