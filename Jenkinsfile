@@ -141,30 +141,28 @@ EOF
             }
         }
 
-        stage("FastAPI Smoke Test (Local)") {
-            steps {
-                sh '''
-                    set -e
-                    . venv/bin/activate
+      stage('FastAPI Smoke Test (Local)') {
+    steps {
+        sh '''
+        set -e
+        echo "🚀 Starting FastAPI..."
 
-                    echo "🚀 Starting FastAPI..."
-                    uvicorn main:app --host 0.0.0.0 --port $APP_PORT > uvicorn.log 2>&1 &
-                    PID=$!
+        venv/bin/uvicorn main:app --host 0.0.0.0 --port 7000 > uvicorn.log 2>&1 &
+        PID=$!
 
-                    for i in {1..20}; do
-                        if curl -s http://localhost:$APP_PORT/health | grep -q ok; then
-                            kill $PID
-                            exit 0
-                        fi
-                        sleep 2
-                    done
+        echo "⏳ Waiting for server to be ready..."
+        sleep 5
 
-                    cat uvicorn.log
-                    kill $PID || true
-                    exit 1
-                '''
-            }
-        }
+        echo "🔍 Hitting health endpoint..."
+        curl -s http://localhost:7000/health | grep -q ok
+
+        echo "✅ FastAPI smoke test passed"
+
+        kill $PID
+        '''
+    }
+}
+
 
         stage("Docker Build") {
             steps {
