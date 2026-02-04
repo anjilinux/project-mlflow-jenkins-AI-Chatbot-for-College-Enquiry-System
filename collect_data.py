@@ -1,23 +1,29 @@
 import pandas as pd
 
+
 def collect_data():
     data = {
         "question": [
             "What courses are offered?",
             "What is the admission process?",
-            "What are the hostel fees?",
-            "Does the college provide placements?"
+            "Is hostel facility available?",
+            "What are the placement opportunities?"
         ],
         "intent": [
             "courses",
             "admission",
-            "fees",
+            "hostel",
             "placements"
         ]
     }
 
     df = pd.DataFrame(data)
-    df.to_csv("data/raw/college_faq.csv", index=False)
+
+    # SAVE DIRECTLY IN ROOT
+    df.to_csv("college_faq.csv", index=False)
+
+    print("✅ Data saved to college_faq.csv (root directory)")
+
 
 if __name__ == "__main__":
     collect_data()
