@@ -2,14 +2,20 @@ import pandas as pd
 import joblib
 from sklearn.metrics import classification_report
 
-df = pd.read_csv("data/processed/clean_data.csv")
+def evaluate():
+    # ROOT files only
+    df = pd.read_csv("clean_data.csv")
 
-model = joblib.load("artifacts/model.pkl")
-vectorizer = joblib.load("artifacts/vectorizer.pkl")
+    model = joblib.load("model.pkl")
+    vectorizer = joblib.load("vectorizer.pkl")
 
-X = vectorizer.transform(df["question"])
-y = df["intent"]
+    X = vectorizer.transform(df["question"])
+    y = df["intent"]
 
-preds = model.predict(X)
+    preds = model.predict(X)
 
-print(classification_report(y, preds))
+    print("✅ Model Evaluation Report:")
+    print(classification_report(y, preds))
+
+if __name__ == "__main__":
+    evaluate()
