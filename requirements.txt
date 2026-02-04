@@ -5,3 +5,11 @@ uvicorn
 joblib
 mlflow
 pytest
+fastapi
+uvicorn
+scikit-learn
+pandas
+joblib
+mlflow
+pytest
+httpx
