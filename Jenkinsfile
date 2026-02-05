@@ -145,42 +145,55 @@ EOF
             }
         }
 
-        stage("Docker Smoke Test + AI Agent API Test") {
-            steps {
-                sh '''
-                    set -e
+        
+stage("Docker GPU Smoke Test + AI Agent API Test") {
+    steps {
+        sh '''
+        set -e
 
-                    CONTAINER=college_chatbot_test
-                    docker rm -f $CONTAINER || true
+        CONTAINER=college_chatbot_test
+        docker rm -f $CONTAINER || true
 
-                    HOST_PORT=$(shuf -i 8000-8999 -n 1)
-                    echo "Using host port: $HOST_PORT"
+        HOST_PORT=$(shuf -i 8000-8999 -n 1)
+        echo "Using host port: $HOST_PORT"
 
-                    # Run Docker with GPU support
-                    docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER $IMAGE_NAME:$IMAGE_TAG
+        echo "📊 GPU usage BEFORE starting container"
+        nvidia-smi
 
-                    echo "⏳ Waiting for container to become healthy..."
-                    for i in $(seq 1 20); do
-                        if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
-                            echo "✅ Container is healthy"
-                            break
-                        fi
-                        sleep 5
-                    done
+        # Run container with GPU support, map to 8000 inside
+        docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER college-enquiry-chatbot:latest
 
-                    echo "🤖 Testing AI Agent predict API..."
-                    curl -X POST http://localhost:${HOST_PORT}/predict \
-                        -H "Content-Type: application/json" \
-                        -d '{"question":"Is hostel available?"}' | tee response.json
+        echo "⏳ Waiting for container to become healthy..."
+        for i in $(seq 1 20); do
+            if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
+                echo "✅ Container is healthy"
+                break
+            fi
+            sleep 5
+        done
 
-                    echo "📜 Container logs:"
-                    docker logs $CONTAINER
+        echo "📊 GPU usage AFTER starting container"
+        nvidia-smi
 
-                    # Cleanup container
-                    docker rm -f $CONTAINER
-                '''
-            }
-        }
+        echo "🤖 Testing AI Agent predict API..."
+        curl -X POST http://localhost:${HOST_PORT}/predict \
+            -H "Content-Type: application/json" \
+            -d '{"question":"Is hostel available?"}' | tee response.json
+
+        echo "📜 Container logs:"
+        docker logs $CONTAINER
+
+        echo "📊 GPU usage AFTER API test"
+        nvidia-smi
+
+        docker rm -f $CONTAINER
+        '''
+    }
+}
+
+
+
+
 
         stage("Archive Artifacts") {
             steps {
