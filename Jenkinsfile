@@ -27,17 +27,16 @@ pipeline {
 
     stages {
 
-        stage("Stage 1: Checkout Code") {
-            steps {
-                sh '''
-                # ================================
-                # Stage 1: Checkout Code
-                # ================================
-                git branch: 'master' ,
-                    url: 'https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git'
-                '''
-            }
-        }
+stage("Stage 1: Checkout Code") {
+    steps {
+        checkout([
+            $class: 'GitSCM',
+            branches: [[name: '*/master']],
+            userRemoteConfigs: [[url: 'https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git']]
+        ])
+    }
+}
+
 
         stage("Stage 2: Setup Virtual Environment") {
             steps {
