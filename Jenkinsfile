@@ -193,8 +193,10 @@ stage("Docker Smoke Test") {
 
         echo "⏳ Waiting for container to become healthy..."
 
+        READY=false
         for i in $(seq 1 20); do
             if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
+                READY=true
                 echo "✅ Container is healthy"
                 break
             fi
@@ -202,14 +204,20 @@ stage("Docker Smoke Test") {
             sleep 2
         done
 
-        # Final hard check
-        curl -sf http://localhost:${HOST_PORT}/health > /dev/null
+        if [ "$READY" = false ]; then
+            echo "❌ Container failed to start"
+            echo "📜 Docker logs:"
+            docker logs $CONTAINER
+            docker rm -f $CONTAINER
+            exit 1
+        fi
 
         docker logs $CONTAINER
         docker rm -f $CONTAINER
         '''
     }
 }
+
 
 
 
