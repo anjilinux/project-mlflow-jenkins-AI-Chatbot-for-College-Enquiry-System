@@ -1,19 +1,17 @@
 pipeline {
-    agent {
-        label "gpu-node"
-    }
+    agent { label "gpu-node" }
 
     options {
         timestamps()
         disableConcurrentBuilds()
-        timeout(time: 90, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '15'))
+        timeout(time: 60, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
     environment {
-        PYTHON = "python3.12"
+        PYTHON = "python3"
         VENV_DIR = "venv"
-        APP_PORT = "8000"
+        APP_PORT = "7000"
 
         MLFLOW_TRACKING_URI = "http://localhost:5555"
         MLFLOW_EXPERIMENT_NAME = "AI-College-Enquiry-Chatbot"
@@ -29,37 +27,46 @@ pipeline {
 
     stages {
 
-        stage("Checkout Code") {
-            steps {
-                git branch: 'master',
-                    url: 'https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git'
-            }
-        }
-
-        stage("Setup Virtual Environment") {
+        stage("Stage 1: Checkout Code") {
             steps {
                 sh '''
-                    set -e
-                    if [ ! -d $VENV_DIR ]; then
-                        $PYTHON -m venv $VENV_DIR
-                    fi
-                    $VENV_DIR/bin/pip install --upgrade pip
-                    $VENV_DIR/bin/pip install -r requirements.txt
+                /* ================================
+                   Stage 1: Checkout Code
+                ================================= */
+                git branch: 'master',
+                    url: 'https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git'
                 '''
             }
         }
 
-        stage("Data Validation") {
+        stage("Stage 2: Setup Virtual Environment") {
             steps {
                 sh '''
-                    set -e
-                    echo "🔍 Validating dataset..."
-                    test -f college_faq.csv || (echo "CSV missing" && exit 1)
+                /* ================================
+                   Stage 2: Setup Virtual Environment
+                ================================= */
+                set -e
+                if [ ! -d venv ]; then
+                    python3 -m venv venv
+                fi
+                venv/bin/pip install --upgrade pip
+                venv/bin/pip install -r requirements.txt
+                '''
+            }
+        }
 
-                    $VENV_DIR/bin/python - <<EOF
+        stage("Stage 3: Data Validation") {
+            steps {
+                sh '''
+                /* ================================
+                   Stage 3: Data Validation
+                ================================= */
+                set -e
+                test -f college_faq.csv || (echo "CSV missing" && exit 1)
+                venv/bin/python - <<EOF
 import pandas as pd
 df = pd.read_csv("college_faq.csv")
-if not {"question", "intent"}.issubset(df.columns):
+if not {"question","intent"}.issubset(df.columns):
     raise ValueError("Missing required columns")
 if df.isnull().any().any():
     raise ValueError("Null values found")
@@ -69,134 +76,194 @@ EOF
             }
         }
 
-        stage("Data Collection") {
+        stage("Stage 4: Data Collection") {
             steps {
                 sh '''
-                    set -e
-                    $VENV_DIR/bin/python collect_data.py
+                /* ================================
+                   Stage 4: Data Collection
+                ================================= */
+                set -e
+                venv/bin/python collect_data.py
                 '''
             }
         }
 
-        stage("Data Preprocessing") {
+        stage("Stage 5: Data Preprocessing") {
             steps {
                 sh '''
-                    set -e
-                    $VENV_DIR/bin/python preprocess.py
+                /* ================================
+                   Stage 5: Data Preprocessing
+                ================================= */
+                set -e
+                venv/bin/python preprocess.py
                 '''
             }
         }
 
-        stage("Feature Engineering") {
+        stage("Stage 6: Feature Engineering") {
             steps {
                 sh '''
-                    set -e
-                    $VENV_DIR/bin/python feature_engineering.py
+                /* ================================
+                   Stage 6: Feature Engineering
+                ================================= */
+                set -e
+                venv/bin/python feature_engineering.py
                 '''
             }
         }
 
-        stage("Model Training (MLflow)") {
+        stage("Stage 7: Model Training (MLflow)") {
             steps {
                 sh '''
-                    set -e
-                    export MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
-                    export MLFLOW_EXPERIMENT_NAME=$MLFLOW_EXPERIMENT_NAME
-                    $VENV_DIR/bin/python train.py
+                /* ================================
+                   Stage 7: Model Training (MLflow)
+                ================================= */
+                set -e
+                export MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
+                export MLFLOW_EXPERIMENT_NAME=$MLFLOW_EXPERIMENT_NAME
+                venv/bin/python train.py
                 '''
             }
         }
 
-        stage("Model Evaluation") {
+        stage("Stage 8: Model Evaluation") {
             steps {
                 sh '''
-                    set -e
-                    $VENV_DIR/bin/python evaluate.py
+                /* ================================
+                   Stage 8: Model Evaluation
+                ================================= */
+                set -e
+                venv/bin/python evaluate.py
                 '''
             }
         }
 
-        stage("Run PyTests") {
+        stage("Stage 9: Run PyTests") {
             steps {
                 sh '''
-                    set -e
-                    $VENV_DIR/bin/pytest tests/ --disable-warnings
+                /* ================================
+                   Stage 9: Run PyTests
+                ================================= */
+                set -e
+                venv/bin/pytest tests/ --disable-warnings
                 '''
             }
         }
 
-        stage("Model Artifact Check") {
+        stage("Stage 10: Model Artifact Check") {
             steps {
                 sh '''
-                    set -e
-                    test -f $MODEL_PATH || exit 1
-                    test -f $VECTORIZER_PATH || exit 1
-                    echo "✅ Model artifacts verified"
+                /* ================================
+                   Stage 10: Model Artifact Check
+                ================================= */
+                set -e
+                test -f $MODEL_PATH || exit 1
+                test -f $VECTORIZER_PATH || exit 1
+                echo "✅ Model artifacts verified"
                 '''
             }
         }
 
-        stage('Docker Build') {
+        stage("Stage 11: FastAPI Local Smoke Test") {
             steps {
                 sh '''
-                    set -e
-                    docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                /* ================================
+                   Stage 11: FastAPI Local Smoke Test
+                ================================= */
+                set -e
+                echo "🚀 Checking GPU with nvidia-smi before FastAPI..."
+                nvidia-smi
+
+                echo "🚀 Starting FastAPI..."
+                venv/bin/uvicorn main:app --host 0.0.0.0 --port $APP_PORT > uvicorn.log 2>&1 &
+                PID=$!
+
+                echo "⏳ Waiting for FastAPI health endpoint..."
+                for i in {1..15}; do
+                    if curl -sf http://localhost:$APP_PORT/health > /dev/null; then
+                        echo "✅ FastAPI is healthy"
+                        break
+                    fi
+                    sleep 5
+                done
+
+                echo "🤖 Running API predict test..."
+                curl -X POST http://localhost:$APP_PORT/predict \
+                    -H "Content-Type: application/json" \
+                    -d '{"question":"Is hostel available?"}' | tee response.json
+
+                kill $PID
+
+                echo "🚀 GPU status after FastAPI test:"
+                nvidia-smi
                 '''
             }
         }
 
-        
-stage("Docker GPU Smoke Test + AI Agent API Test") {
-    steps {
-        sh '''
-        set -e
-
-        CONTAINER=college_chatbot_test
-        docker rm -f $CONTAINER || true
-
-        HOST_PORT=$(shuf -i 8000-8999 -n 1)
-        echo "Using host port: $HOST_PORT"
-
-        echo "📊 GPU usage BEFORE starting container"
-        nvidia-smi
-
-        # Run container with GPU support, map to 8000 inside
-        docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER college-enquiry-chatbot:latest
-
-        echo "⏳ Waiting for container to become healthy..."
-        for i in $(seq 1 20); do
-            if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
-                echo "✅ Container is healthy"
-                break
-            fi
-            sleep 5
-        done
-
-        echo "📊 GPU usage AFTER starting container"
-        nvidia-smi
-
-        echo "🤖 Testing AI Agent predict API..."
-        curl -X POST http://localhost:${HOST_PORT}/predict \
-            -H "Content-Type: application/json" \
-            -d '{"question":"Is hostel available?"}' | tee response.json
-
-        echo "📜 Container logs:"
-        docker logs $CONTAINER
-
-        echo "📊 GPU usage AFTER API test"
-        nvidia-smi
-
-        docker rm -f $CONTAINER
-        '''
-    }
-}
-
-
-
-
-
-        stage("Archive Artifacts") {
+        stage("Stage 12: Docker Build") {
             steps {
+                sh '''
+                /* ================================
+                   Stage 12: Docker Build
+                ================================= */
+                set -e
+                docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                '''
+            }
+        }
+
+        stage("Stage 13: Docker Smoke Test + AI Agent API Test") {
+            steps {
+                sh '''
+                /* ================================
+                   Stage 13: Docker Smoke Test + AI Agent API Test
+                ================================= */
+                set -e
+
+                CONTAINER=college_chatbot_test
+                docker rm -f $CONTAINER || true
+
+                HOST_PORT=$(shuf -i 8000-8999 -n 1)
+                echo "Using host port: $HOST_PORT"
+
+                echo "🚀 GPU status before running Docker container:"
+                nvidia-smi
+
+                docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER $IMAGE_NAME:$IMAGE_TAG
+
+                echo "⏳ Waiting for container health..."
+                for i in $(seq 1 20); do
+                    if curl -sf http://localhost:${HOST_PORT}/health; then
+                        echo "✅ Container is healthy"
+                        break
+                    fi
+                    nvidia-smi
+                    sleep 5
+                done
+
+                echo "🤖 Testing AI Agent predict API inside Docker..."
+                curl -X POST http://localhost:${HOST_PORT}/predict \
+                    -H "Content-Type: application/json" \
+                    -d '{"question":"Is hostel available?"}' | tee response.json
+
+                echo "📜 Container logs:"
+                docker logs $CONTAINER
+
+                echo "🚀 GPU status after Docker container test:"
+                nvidia-smi
+
+                docker rm -f $CONTAINER
+                '''
+            }
+        }
+
+        stage("Stage 14: Archive Artifacts") {
+            steps {
+                sh '''
+                /* ================================
+                   Stage 14: Archive Artifacts
+                ================================= */
+                '''
                 archiveArtifacts artifacts: '''
                     artifacts/*.pkl,
                     mlruns/**,
@@ -205,6 +272,7 @@ stage("Docker GPU Smoke Test + AI Agent API Test") {
                 ''', fingerprint: true
             }
         }
+
     }
 
     post {
