@@ -33,7 +33,7 @@ pipeline {
                 # ================================
                 # Stage 1: Checkout Code
                 # ================================
-                git branch: 'master' \
+                git branch: 'master' ,
                     url: 'https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git'
                 '''
             }
