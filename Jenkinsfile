@@ -176,8 +176,7 @@ EOF
                 '''
             }
         }
-
-    stage("Docker Smoke Test") {
+stage("Docker Smoke Test") {
     steps {
         sh '''
         set -e
@@ -194,16 +193,16 @@ EOF
 
         echo "⏳ Waiting for container to become healthy..."
 
-        for i in {1..20}; do
+        for i in $(seq 1 20); do
             if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
                 echo "✅ Container is healthy"
                 break
             fi
             echo "⏱ retry $i..."
-            sleep 29
+            sleep 2
         done
 
-        # Final check (hard fail if still not up)
+        # Final hard check
         curl -sf http://localhost:${HOST_PORT}/health > /dev/null
 
         docker logs $CONTAINER
