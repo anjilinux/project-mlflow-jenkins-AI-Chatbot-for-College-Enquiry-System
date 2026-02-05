@@ -178,12 +178,12 @@ EOF
                 PID=$!
 
                 echo "⏳ Waiting for FastAPI health endpoint..."
-                for i in {1..15}; do
+                for i in {1..10}; do
                     if curl -sf http://localhost:$APP_PORT/health > /dev/null; then
                         echo "✅ FastAPI is healthy"
                         break
                     fi
-                    sleep 5
+                    sleep 2
                 done
 
                 echo "🤖 Running API predict test..."
@@ -225,19 +225,19 @@ EOF
                 HOST_PORT=$(shuf -i 8000-8999 -n 1)
                 echo "Using host port: $HOST_PORT"
 
-                echo "🚀 GPU status before running Docker container:"
+                echo "🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status before running Docker container:"
                 nvidia-smi
 
                 docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER $IMAGE_NAME:$IMAGE_TAG
 
                 echo "⏳ Waiting for container health..."
-                for i in $(seq 1 20); do
+                for i in $(seq 1 10); do
                     if curl -sf http://localhost:${HOST_PORT}/health; then
                         echo "✅ Container is healthy"
                         break
                     fi
                     nvidia-smi
-                    sleep 5
+                    sleep 2
                 done
 
                 echo "🤖 Testing AI Agent predict API inside Docker..."
@@ -248,7 +248,7 @@ EOF
                 echo "📜 Container logs:"
                 docker logs $CONTAINER
 
-                echo "🚀 GPU status after Docker container test:"
+                echo "🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status after Docker container test:"
                 nvidia-smi
 
                 docker rm -f $CONTAINER
