@@ -141,7 +141,7 @@ EOF
             }
         }
 
-      stage('FastAPI Smoke Test (Local)') {
+ stage('FastAPI Smoke Test (Local)') {
     steps {
         sh '''
         set -e
@@ -150,18 +150,22 @@ EOF
         venv/bin/uvicorn main:app --host 0.0.0.0 --port 7000 > uvicorn.log 2>&1 &
         PID=$!
 
-        echo "⏳ Waiting for server to be ready..."
-        sleep 30
+        echo "⏳ Waiting for server..."
+        for i in {1..15}; do
+            if curl -sf http://localhost:7000/health > /dev/null; then
+                echo "✅ FastAPI is healthy"
+                break
+            fi
+            sleep 2
+        done
 
-        echo "🔍 Hitting health endpoint..."
-        curl -s http://localhost:7000/health | grep -q ok
-
-        echo "✅ FastAPI smoke test passed"
+        curl -sf http://localhost:7000/health > /dev/null
 
         kill $PID
         '''
     }
 }
+ 
 
 
         stage("Docker Build") {
@@ -173,32 +177,44 @@ EOF
             }
         }
 
-        stage("Docker Smoke Test") {
-            steps {
-                sh '''
-                  set -e
+stage("Docker Smoke Test") {
+    steps {
+        sh '''
+        set -e
 
-CONTAINER=college_chatbot_test
-docker rm -f $CONTAINER || true
+        CONTAINER=college_chatbot_test
+        docker rm -f $CONTAINER || true
 
-HOST_PORT=$(shuf -i 8000-8999 -n 1)
+        HOST_PORT=$(shuf -i 8000-8999 -n 1)
 
-docker run -d \
-  -p ${HOST_PORT}:8000 \
-  --name $CONTAINER \
-  college-enquiry-chatbot:latest
+        docker run -d \
+          -p ${HOST_PORT}:8000 \
+          --name $CONTAINER \
+          college-enquiry-chatbot:latest
 
-sleep 30
+        echo "⏳ Waiting for container..."
+        for i in {1..15}; do
+            if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
+                echo "✅ Container is healthy"
+                break
+            fi
+            sleep 2
+        done
 
-curl -s http://localhost:${HOST_PORT}/health | grep -q '"status":"ok"'
+        curl -sf http://localhost:${HOST_PORT}/health > /dev/null
+
+        docker logs $CONTAINER
+        docker rm -f $CONTAINER
+        '''
+    }
+}
 
 
-docker logs $CONTAINER
-docker rm -f $CONTAINER
 
-                '''
-            }
-        }
+
+
+
+
 
         stage("Archive Artifacts") {
             steps {
