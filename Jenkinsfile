@@ -176,24 +176,25 @@ EOF
         stage("Docker Smoke Test") {
             steps {
                 sh '''
-                    set -e
-                    CONTAINER=college_chatbot_test
-                    docker rm -f $CONTAINER || true
+                  set -e
 
-                    HOST_PORT=$(shuf -i 8000-8999 -n 1)
-                    docker run -d -p $HOST_PORT:$APP_PORT --name $CONTAINER $IMAGE_NAME:$IMAGE_TAG
+CONTAINER=college_chatbot_test
+docker rm -f $CONTAINER || true
 
-                    for i in {1..30}; do
-                        if curl -s http://localhost:$HOST_PORT/health | grep -q ok; then
-                            docker rm -f $CONTAINER
-                            exit 0
-                        fi
-                        sleep 1
-                    done
+HOST_PORT=$(shuf -i 8000-8999 -n 1)
 
-                    docker logs $CONTAINER
-                    docker rm -f $CONTAINER
-                    exit 1
+docker run -d \
+  -p ${HOST_PORT}:8000 \
+  --name $CONTAINER \
+  college-enquiry-chatbot:latest
+
+sleep 3
+
+curl -s http://localhost:${HOST_PORT}/health | grep -q ok
+
+docker logs $CONTAINER
+docker rm -f $CONTAINER
+
                 '''
             }
         }
