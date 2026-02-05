@@ -178,7 +178,7 @@ EOF
                 PID=$!
 
                 echo "⏳ Waiting for FastAPI health endpoint..."
-                for i in {1..10}; do
+                for i in {1..3}; do
                     if curl -sf http://localhost:$APP_PORT/health > /dev/null; then
                         echo "✅ FastAPI is healthy"
                         break
@@ -231,7 +231,7 @@ EOF
                 docker run --gpus all -d -p ${HOST_PORT}:8000 --name $CONTAINER $IMAGE_NAME:$IMAGE_TAG
 
                 echo "⏳ Waiting for container health..."
-                for i in $(seq 1 10); do
+                for i in $(seq 1 3); do
                     if curl -sf http://localhost:${HOST_PORT}/health; then
                         echo "✅ Container is healthy"
                         break
