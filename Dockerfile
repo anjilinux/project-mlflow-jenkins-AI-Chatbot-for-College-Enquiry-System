@@ -2,9 +2,9 @@ FROM nvidia/cuda:13.1.1-cudnn-runtime-ubuntu24.04
 
 WORKDIR /app
 
-# Python installation
+# Install full Python + venv + pip
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
+    apt-get install -y python3-full python3-venv python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
