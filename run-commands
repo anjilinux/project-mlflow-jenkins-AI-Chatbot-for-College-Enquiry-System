@@ -5,3 +5,29 @@ curl -X POST http://localhost:${HOST_PORT}/predict \
   -d '{"question":"What courses are offered?"}'
 
 
+========================================
+
+root@bny:~# curl -X POST http://localhost:8610/predict \
+-H "Content-Type: application/json" \
+-d '{"question":"What courses are offered?"}'
+{"intent":"courses","answer":"We offer B.Tech MBA MCA"}root@bny:~# 
+
+root@bny:~# 
+root@bny:~# curl -X POST http://localhost:8610/predict \
+-H "Content-Type: application/json" \
+-d '{"question":"Do you provide placements?"}'
+{"intent":"hostel","answer":"Yes hostel is available"}root@bny:~# 
+
+root@bny:~# 
+root@bny:~# curl -X POST http://localhost:8610/predict \
+-H "Content-Type: application/json" \
+-d '{"question":"What is the admission process?"}'
+{"intent":"admission","answer":"Admission is based on entrance exam"}root@bny:~# 
+root@bny:~# 
+root@bny:~# 
+
+
+
+
+
+
