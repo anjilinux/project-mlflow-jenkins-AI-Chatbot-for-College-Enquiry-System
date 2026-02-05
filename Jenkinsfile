@@ -220,14 +220,15 @@ stage("Docker Smoke Test") {
 
 
 stage("AI Agent API Test") {
+    steps{
     sh '''
       curl -f http://localhost:${HOST_PORT}/health
       curl -f -X POST http://localhost:${HOST_PORT}/predict \
         -H "Content-Type: application/json" \
         -d '{"question":"Admission process?"}'
     '''
-}
-
+  }
+ }
 
 
 
