@@ -190,7 +190,8 @@ docker run -d \
 
 sleep 30
 
-curl -s http://localhost:${HOST_PORT}/health | grep -q ok
+curl -s http://localhost:${HOST_PORT}/health | grep -q '"status":"ok"'
+
 
 docker logs $CONTAINER
 docker rm -f $CONTAINER
