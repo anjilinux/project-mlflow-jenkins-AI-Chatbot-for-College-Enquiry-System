@@ -176,7 +176,10 @@ EOF
                 '''
             }
         }
-stage("Docker Smoke Test") {
+
+
+
+stage("Docker Smoke Test + AI Agent API Test") {
     steps {
         sh '''
         set -e
@@ -185,50 +188,31 @@ stage("Docker Smoke Test") {
         docker rm -f $CONTAINER || true
 
         HOST_PORT=$(shuf -i 8000-8999 -n 1)
+        echo "Using host port: $HOST_PORT"
 
-        docker run -d \
-          -p ${HOST_PORT}:8000 \
-          --name $CONTAINER \
-          college-enquiry-chatbot:latest
+        docker run -d -p ${HOST_PORT}:8000 --name $CONTAINER college-enquiry-chatbot:latest
 
-        echo "⏳ Waiting for container to become healthy..."
-
-        READY=false
+        echo "⏳ Waiting for container..."
         for i in $(seq 1 20); do
-            if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
-                READY=true
+            if curl -sf http://localhost:${HOST_PORT}/health; then
                 echo "✅ Container is healthy"
                 break
             fi
-            echo "⏱ retry $i..."
             sleep 2
         done
 
-        if [ "$READY" = false ]; then
-            echo "❌ Container failed to start"
-            echo "📜 Docker logs:"
-            docker logs $CONTAINER
-            docker rm -f $CONTAINER
-            exit 1
-        fi
+        echo "🤖 Testing AI Agent predict API..."
+        curl -X POST http://localhost:${HOST_PORT}/predict \
+          -H "Content-Type: application/json" \
+          -d '{"question":"Is hostel available?"}' | tee response.json
 
+        echo "📜 Container logs:"
         docker logs $CONTAINER
+
         docker rm -f $CONTAINER
         '''
     }
 }
-
-
-stage("AI Agent API Test") {
-    steps{
-    sh '''
-      curl -f http://localhost:${HOST_PORT}/health
-      curl -f -X POST http://localhost:${HOST_PORT}/predict \
-        -H "Content-Type: application/json" \
-        -d '{"question":"Admission process?"}'
-    '''
-  }
- }
 
 
 
