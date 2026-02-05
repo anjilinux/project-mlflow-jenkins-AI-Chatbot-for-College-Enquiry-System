@@ -151,7 +151,7 @@ EOF
         PID=$!
 
         echo "⏳ Waiting for server to be ready..."
-        sleep 5
+        sleep 30
 
         echo "🔍 Hitting health endpoint..."
         curl -s http://localhost:7000/health | grep -q ok
@@ -188,7 +188,7 @@ docker run -d \
   --name $CONTAINER \
   college-enquiry-chatbot:latest
 
-sleep 3
+sleep 30
 
 curl -s http://localhost:${HOST_PORT}/health | grep -q ok
 
