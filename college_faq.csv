@@ -1,7 +1,5 @@
-question,answer,intent
-What courses are offered?,We offer B.Tech MBA MCA,courses
-What is the admission process?,Admission is based on entrance exam,admission
-What is the fee structure?,Fee is 1.2 LPA,fees
-Is hostel available?,Yes hostel is available,hostel
-What are college timings?,College runs from 9AM to 4PM,timings
-Do you provide placements?,Yes 95 percent placement,placements
+question,intent
+What courses are offered?,courses
+What is the admission process?,admission
+Is hostel facility available?,hostel
+What are the placement opportunities?,placements

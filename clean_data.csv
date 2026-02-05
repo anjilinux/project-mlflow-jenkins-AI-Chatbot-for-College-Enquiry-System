@@ -1,5 +1,5 @@
 question,intent
-What are the admission requirements?,admission
-Do you provide hostel facilities?,hostel
-What courses are available?,courses
-What about placements?,placements
+what courses are offered?,courses
+what is the admission process?,admission
+is hostel facility available?,hostel
+what are the placement opportunities?,placements
