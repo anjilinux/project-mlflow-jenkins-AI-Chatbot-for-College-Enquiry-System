@@ -1,0 +1,7 @@
+HOST_PORT = 
+
+curl -X POST http://localhost:${HOST_PORT}/predict \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What courses are offered?"}'
+
+
