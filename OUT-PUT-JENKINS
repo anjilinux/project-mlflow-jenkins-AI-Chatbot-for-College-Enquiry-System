@@ -1,0 +1,498 @@
+Started by user anjireddy-jenkins
+
+Obtained Jenkinsfile from git https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on gpu-node
+ in /var/lib/jenkins/workspace/ai-chatbote
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ai-chatbote/.git # timeout=10
+ > git config remote.origin.url https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git # timeout=10
+Fetching upstream changes from https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 888459cb0648e53cb1c6b54cbfcc4f556a956356 (refs/remotes/origin/master)
+Commit message: "dd"
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 888459cb0648e53cb1c6b54cbfcc4f556a956356 # timeout=10
+ > git rev-list --no-walk 888459cb0648e53cb1c6b54cbfcc4f556a956356 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+19:55:31  Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Stage 1: Checkout Code)
+[Pipeline] checkout
+19:55:31  Selected Git installation does not exist. Using Default
+19:55:31  The recommended git tool is: NONE
+19:55:31  No credentials specified
+19:55:31  Fetching changes from the remote Git repository
+19:55:31  Checking out Revision 888459cb0648e53cb1c6b54cbfcc4f556a956356 (refs/remotes/origin/master)
+19:55:31  Commit message: "dd"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 2: Setup Virtual Environment)
+[Pipeline] sh
+19:55:31   > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/ai-chatbote/.git # timeout=10
+19:55:31   > git config remote.origin.url https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git # timeout=10
+19:55:31  Fetching upstream changes from https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git
+19:55:31   > git --version # timeout=10
+19:55:31   > git --version # 'git version 2.43.0'
+19:55:31   > git fetch --tags --force --progress -- https://github.com/anjilinux/project-mlflow-jenkins-AI-Chatbot-for-College-Enquiry-System.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+19:55:31   > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+19:55:31   > git config core.sparsecheckout # timeout=10
+19:55:31   > git checkout -f 888459cb0648e53cb1c6b54cbfcc4f556a956356 # timeout=10
+19:55:32  + set -e
+19:55:32  + [ ! -d venv ]
+19:55:32  + venv/bin/pip install -r requirements.txt
+19:55:32  Requirement already satisfied: pandas in ./venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (2.3.3)
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 3: Data Validation)
+[Pipeline] sh
+19:55:32  + set -e
+19:55:32  + test -f college_faq.csv
+19:55:32  + venv/bin/python -
+19:55:33  ✅ Dataset validation passed
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 4: Data Collection)
+[Pipeline] sh
+19:55:33  + set -e
+19:55:33  + venv/bin/python collect_data.py
+19:55:34  ✅ Data saved to college_faq.csv (root directory)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 5: Data Preprocessing)
+[Pipeline] sh
+
+19:55:34  + set -e
+19:55:34  + venv/bin/python preprocess.py
+19:55:34  INFO:root:✅ clean_data.csv created
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 6: Feature Engineering)
+[Pipeline] sh
+
+19:55:35  + set -e
+19:55:35  + venv/bin/python feature_engineering.py
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 7: Model Training (MLflow))
+[Pipeline] sh
+
+19:55:36  + set -e
+19:55:36  + export MLFLOW_TRACKING_URI=http://localhost:5555
+19:55:36  + export MLFLOW_EXPERIMENT_NAME=AI-College-Enquiry-Chatbot
+19:55:36  + venv/bin/python train.py
+
+19:55:38  ✅ Model trained successfully
+19:55:38  🏃 View run rebellious-carp-234 at: http://localhost:5555/#/experiments/73/runs/21b961bc5419475687eb42b344452ece
+19:55:38  🧪 View experiment at: http://localhost:5555/#/experiments/73
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 8: Model Evaluation)
+[Pipeline] sh
+
+19:55:39  + set -e
+19:55:39  + venv/bin/python evaluate.py
+19:55:40  ✅ Model Evaluation Report:
+19:55:40                precision    recall  f1-score   support
+19:55:40  
+19:55:40     admission       1.00      1.00      1.00         1
+19:55:40       courses       1.00      1.00      1.00         1
+19:55:40        hostel       1.00      1.00      1.00         1
+19:55:40    placements       1.00      1.00      1.00         1
+19:55:40  
+19:55:40      accuracy                           1.00         4
+19:55:40     macro avg       1.00      1.00      1.00         4
+19:55:40  weighted avg       1.00      1.00      1.00         4
+19:55:40  
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 9: Run PyTests)
+[Pipeline] sh
+
+19:55:41  + set -e
+19:55:41  + venv/bin/pytest tests/ --disable-warnings
+
+19:55:42  ============================= test session starts ==============================
+19:55:42  platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+19:55:42  rootdir: /var/lib/jenkins/workspace/ai-chatbote
+19:55:42  plugins: anyio-4.12.1
+19:55:42  collected 6 items
+19:55:42  
+19:55:42  tests/test_api.py ..                                                     [ 33%]
+19:55:42  tests/test_data.py ...                                                   [ 83%]
+19:55:43  tests/test_model.py .                                                    [100%]
+19:55:43  
+19:55:43  ============================== 6 passed in 1.52s ===============================
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 10: Model Artifact Check)
+[Pipeline] sh
+19:55:43  + set -e
+19:55:43  + test -f model.pkl
+19:55:43  + test -f vectorizer.pkl
+19:55:43  + echo ✅ Model artifacts verified
+19:55:43  ✅ Model artifacts verified
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 11: FastAPI Local Smoke Test)
+[Pipeline] sh
+
+19:55:43  + set -e
+19:55:43  + echo 🚀 Checking GPU with nvidia-smi before FastAPI...
+19:55:43  🚀 Checking GPU with nvidia-smi before FastAPI...
+19:55:43  + nvidia-smi
+
+19:55:45  Thu Feb  5 19:55:45 2026       
+19:55:45  +-----------------------------------------------------------------------------------------+
+19:55:45  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:55:45  +-----------------------------------------+------------------------+----------------------+
+19:55:45  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:55:45  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:55:45  |                                         |                        |               MIG M. |
+19:55:45  |=========================================+========================+======================|
+19:55:45  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:55:45  | N/A   54C    P0              6W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:55:45  |                                         |                        |                  N/A |
+19:55:45  +-----------------------------------------+------------------------+----------------------+
+19:55:45  
+19:55:45  +-----------------------------------------------------------------------------------------+
+19:55:45  | Processes:                                                                              |
+19:55:45  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:55:45  |        ID   ID                                                               Usage      |
+19:55:45  |=========================================================================================|
+19:55:45  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:55:45  +-----------------------------------------------------------------------------------------+
+19:55:45  + echo 🚀 Starting FastAPI...
+19:55:45  🚀 Starting FastAPI...
+19:55:45  + PID=218028
+19:55:45  + echo ⏳ Waiting for FastAPI health endpoint...
+19:55:45  ⏳ Waiting for FastAPI health endpoint...
+19:55:45  + curl -sf http://localhost:7000/health
+19:55:45  + venv/bin/uvicorn main:app --host 0.0.0.0 --port 7000
+19:55:45  + sleep 2
+
+19:55:47  + echo 🤖 Running API predict test...
+19:55:47  🤖 Running API predict test...
+19:55:47  + curl -X POST http://localhost:7000/predict -H Content-Type: application/json -d {"question":"Is hostel available?"}
+19:55:47  + tee response.json
+19:55:47    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+19:55:47                                   Dload  Upload   Total   Spent    Left  Speed
+19:55:47  
+19:55:47    0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+19:55:47  100    89  100    54  100    35   6045   3918 --:--:-- --:--:-- --:--:-- 11125
+19:55:47  {"intent":"hostel","answer":"Yes hostel is available"}+ kill 218028
+19:55:47  + echo 🚀 GPU status after FastAPI test:
+19:55:47  🚀 GPU status after FastAPI test:
+19:55:47  + nvidia-smi
+19:55:47  Thu Feb  5 19:55:47 2026       
+19:55:47  +-----------------------------------------------------------------------------------------+
+19:55:47  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:55:47  +-----------------------------------------+------------------------+----------------------+
+19:55:47  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:55:47  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:55:47  |                                         |                        |               MIG M. |
+19:55:47  |=========================================+========================+======================|
+19:55:47  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:55:47  | N/A   56C    P0             14W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:55:47  |                                         |                        |                  N/A |
+19:55:47  +-----------------------------------------+------------------------+----------------------+
+19:55:47  
+19:55:47  +-----------------------------------------------------------------------------------------+
+19:55:47  | Processes:                                                                              |
+19:55:47  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:55:47  |        ID   ID                                                               Usage      |
+19:55:47  |=========================================================================================|
+19:55:47  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:55:47  +-----------------------------------------------------------------------------------------+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 12: Docker Build)
+[Pipeline] sh
+
+19:55:47  + set -e
+19:55:47  + docker build -t college-enquiry-chatbot:latest .
+19:55:47  #0 building with "default" instance using docker driver
+19:55:47  
+19:55:47  #1 [internal] load build definition from Dockerfile
+19:55:47  #1 transferring dockerfile: 791B done
+19:55:47  #1 DONE 0.0s
+19:55:47  
+19:55:47  #2 [internal] load metadata for docker.io/nvidia/cuda:13.1.1-cudnn-runtime-ubuntu24.04
+
+19:55:48  #2 DONE 0.9s
+19:55:48  
+19:55:48  #3 [internal] load .dockerignore
+19:55:48  #3 transferring context: 2B done
+19:55:48  #3 DONE 0.0s
+19:55:48  
+19:55:48  #4 [1/9] FROM docker.io/nvidia/cuda:13.1.1-cudnn-runtime-ubuntu24.04@sha256:bcc2ddb358d2a64ee3379b184ea3bc46a0926f1b1ec63df136ba61cd4d85f30d
+19:55:48  #4 DONE 0.0s
+19:55:48  
+19:55:48  #5 [internal] load build context
+19:55:49  #5 transferring context: 2.38MB 0.6s done
+19:55:49  #5 DONE 0.6s
+19:55:49  
+19:55:49  #6 [2/9] WORKDIR /app
+19:55:49  #6 CACHED
+19:55:49  
+19:55:49  #7 [3/9] RUN apt-get update &&     DEBIAN_FRONTEND=noninteractive apt-get install -y     python3-full python3-venv python3-pip build-essential &&     rm -rf /var/lib/apt/lists/*
+19:55:49  #7 CACHED
+19:55:49  
+19:55:49  #8 [4/9] RUN python3 -m venv /opt/venv
+19:55:49  #8 CACHED
+19:55:49  
+19:55:49  #9 [5/9] COPY requirements.txt .
+19:55:49  #9 CACHED
+19:55:49  
+19:55:49  #10 [6/9] RUN pip install --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+19:55:49  #10 CACHED
+19:55:49  
+19:55:49  #11 [7/9] COPY . .
+
+19:55:51  #11 DONE 2.8s
+19:55:51  
+19:55:51  #12 [8/9] COPY model.pkl .
+19:55:51  #12 DONE 0.0s
+19:55:51  
+19:55:51  #13 [9/9] COPY vectorizer.pkl .
+19:55:51  #13 DONE 0.0s
+19:55:51  
+19:55:51  #14 exporting to image
+19:55:51  #14 exporting layers
+
+19:55:55  #14 exporting layers 3.7s done
+19:55:55  #14 writing image sha256:fed753ff6474a46e5462ed15a3c83d80438362a26c10b13aa60002a5a096b007 done
+19:55:55  #14 naming to docker.io/library/college-enquiry-chatbot:latest done
+19:55:55  #14 DONE 3.8s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 13: Docker Smoke Test + AI Agent API Test)
+[Pipeline] sh
+
+19:55:55  + set -e
+19:55:55  + CONTAINER=college_chatbot_test
+19:55:55  + docker rm -f college_chatbot_test
+19:55:55  Error response from daemon: No such container: college_chatbot_test
+19:55:55  + shuf -i 8000-8999 -n 1
+19:55:55  + HOST_PORT=8243
+19:55:55  + echo Using host port: 8243
+19:55:55  Using host port: 8243
+19:55:55  + echo 🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status before running Docker container:
+19:55:55  🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status before running Docker container:
+19:55:55  + nvidia-smi
+19:55:55  Thu Feb  5 19:55:55 2026       
+19:55:55  +-----------------------------------------------------------------------------------------+
+19:55:55  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:55:55  +-----------------------------------------+------------------------+----------------------+
+19:55:55  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:55:55  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:55:55  |                                         |                        |               MIG M. |
+19:55:55  |=========================================+========================+======================|
+19:55:55  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:55:55  | N/A   58C    P0             15W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:55:55  |                                         |                        |                  N/A |
+19:55:55  +-----------------------------------------+------------------------+----------------------+
+19:55:55  
+19:55:55  +-----------------------------------------------------------------------------------------+
+19:55:55  | Processes:                                                                              |
+19:55:55  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:55:55  |        ID   ID                                                               Usage      |
+19:55:55  |=========================================================================================|
+19:55:55  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:55:55  +-----------------------------------------------------------------------------------------+
+19:55:55  + docker run --gpus all -d -p 8243:8000 --name college_chatbot_test college-enquiry-chatbot:latest
+19:55:55  649d6cab1b7123fb8afb570198161a109ff6784276208984acb78267a6b93b92
+19:55:56  + echo ⏳ Waiting for container health...
+19:55:56  ⏳ Waiting for container health...
+19:55:56  + seq 1 3
+19:55:56  + curl -sf http://localhost:8243/health
+19:55:56  + nvidia-smi
+19:55:56  Thu Feb  5 19:55:56 2026       
+19:55:56  +-----------------------------------------------------------------------------------------+
+19:55:56  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:55:56  +-----------------------------------------+------------------------+----------------------+
+19:55:56  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:55:56  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:55:56  |                                         |                        |               MIG M. |
+19:55:56  |=========================================+========================+======================|
+19:55:56  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:55:56  | N/A   57C    P8              4W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:55:56  |                                         |                        |                  N/A |
+19:55:56  +-----------------------------------------+------------------------+----------------------+
+19:55:56  
+19:55:56  +-----------------------------------------------------------------------------------------+
+19:55:56  | Processes:                                                                              |
+19:55:56  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:55:56  |        ID   ID                                                               Usage      |
+19:55:56  |=========================================================================================|
+19:55:56  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:55:56  +-----------------------------------------------------------------------------------------+
+19:55:56  + sleep 2
+
+19:55:58  + curl -sf http://localhost:8243/health
+19:55:58  + nvidia-smi
+19:55:58  Thu Feb  5 19:55:58 2026       
+19:55:58  +-----------------------------------------------------------------------------------------+
+19:55:58  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:55:58  +-----------------------------------------+------------------------+----------------------+
+19:55:58  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:55:58  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:55:58  |                                         |                        |               MIG M. |
+19:55:58  |=========================================+========================+======================|
+19:55:58  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:55:58  | N/A   56C    P8              1W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:55:58  |                                         |                        |                  N/A |
+19:55:58  +-----------------------------------------+------------------------+----------------------+
+19:55:58  
+19:55:58  +-----------------------------------------------------------------------------------------+
+19:55:58  | Processes:                                                                              |
+19:55:58  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:55:58  |        ID   ID                                                               Usage      |
+19:55:58  |=========================================================================================|
+19:55:58  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:55:58  +-----------------------------------------------------------------------------------------+
+19:55:58  + sleep 2
+
+19:56:00  + curl -sf http://localhost:8243/health
+19:56:00  + nvidia-smi
+19:56:00  Thu Feb  5 19:56:00 2026       
+19:56:00  +-----------------------------------------------------------------------------------------+
+19:56:00  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:56:00  +-----------------------------------------+------------------------+----------------------+
+19:56:00  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:56:00  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:56:00  |                                         |                        |               MIG M. |
+19:56:00  |=========================================+========================+======================|
+19:56:00  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:56:00  | N/A   56C    P8              1W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:56:00  |                                         |                        |                  N/A |
+19:56:00  +-----------------------------------------+------------------------+----------------------+
+19:56:00  
+19:56:00  +-----------------------------------------------------------------------------------------+
+19:56:00  | Processes:                                                                              |
+19:56:00  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:56:00  |        ID   ID                                                               Usage      |
+19:56:00  |=========================================================================================|
+19:56:00  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:56:00  +-----------------------------------------------------------------------------------------+
+19:56:00  + sleep 2
+
+19:56:02  + echo 🤖 Testing AI Agent predict API inside Docker...
+19:56:02  🤖 Testing AI Agent predict API inside Docker...
+19:56:02  + curl -X POST http://localhost:8243/predict -H Content-Type: application/json -d {"question":"Is hostel available?"}
+19:56:02  + tee response.json
+19:56:02    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+19:56:02                                   Dload  Upload   Total   Spent    Left  Speed
+19:56:02  
+19:56:02    0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+19:56:02  100    35    0     0  100    35      0  62949 --:--:-- --:--:-- --:--:-- 35000
+19:56:02  curl: (56) Recv failure: Connection reset by peer
+19:56:02  + echo 📜 Container logs:
+19:56:02  📜 Container logs:
+19:56:02  + docker logs college_chatbot_test
+19:56:02  
+19:56:02  ==========
+19:56:02  == CUDA ==
+19:56:02  ==========
+19:56:02  
+19:56:02  CUDA Version 13.1.1
+19:56:02  
+19:56:02  Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+19:56:02  
+19:56:02  This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+19:56:02  By pulling and using the container, you accept the terms and conditions of this license:
+19:56:02  https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+19:56:02  
+19:56:02  A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+19:56:02  
+19:56:02  INFO:     Started server process [1]
+19:56:02  INFO:     Waiting for application startup.
+19:56:02  INFO:     Application startup complete.
+19:56:02  INFO:     Uvicorn running on http://0.0.0.0:7777 (Press CTRL+C to quit)
+19:56:02  + echo 🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status after Docker container test:
+19:56:02  🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀 GPU status after Docker container test:
+19:56:02  + nvidia-smi
+19:56:02  Thu Feb  5 19:56:02 2026       
+19:56:02  +-----------------------------------------------------------------------------------------+
+19:56:02  | NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
+19:56:02  +-----------------------------------------+------------------------+----------------------+
+19:56:02  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+19:56:02  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+19:56:02  |                                         |                        |               MIG M. |
+19:56:02  |=========================================+========================+======================|
+19:56:02  |   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+19:56:02  | N/A   56C    P8              1W /   50W |       6MiB /   4096MiB |      0%      Default |
+19:56:02  |                                         |                        |                  N/A |
+19:56:02  +-----------------------------------------+------------------------+----------------------+
+19:56:02  
+19:56:02  +-----------------------------------------------------------------------------------------+
+19:56:02  | Processes:                                                                              |
+19:56:02  |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+19:56:02  |        ID   ID                                                               Usage      |
+19:56:02  |=========================================================================================|
+19:56:02  |    0   N/A  N/A            2362      G   /usr/lib/xorg/Xorg                        4MiB |
+19:56:02  +-----------------------------------------------------------------------------------------+
+19:56:02  + docker rm -f college_chatbot_test
+19:56:02  college_chatbot_test
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stage 14: Archive Artifacts)
+[Pipeline] sh
+[Pipeline] archiveArtifacts
+19:56:02  Archiving artifacts
+19:56:02  Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+19:56:02  ✅ College Enquiry Chatbot Pipeline SUCCESS
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
