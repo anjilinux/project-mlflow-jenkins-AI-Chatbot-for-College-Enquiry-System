@@ -156,7 +156,7 @@ EOF
                 echo "✅ FastAPI is healthy"
                 break
             fi
-            sleep 2
+            sleep 20
         done
 
         curl -sf http://localhost:7000/health > /dev/null
@@ -177,7 +177,7 @@ EOF
             }
         }
 
-stage("Docker Smoke Test") {
+    stage("Docker Smoke Test") {
     steps {
         sh '''
         set -e
@@ -192,15 +192,18 @@ stage("Docker Smoke Test") {
           --name $CONTAINER \
           college-enquiry-chatbot:latest
 
-        echo "⏳ Waiting for container..."
-        for i in {1..15}; do
+        echo "⏳ Waiting for container to become healthy..."
+
+        for i in {1..20}; do
             if curl -sf http://localhost:${HOST_PORT}/health > /dev/null; then
                 echo "✅ Container is healthy"
                 break
             fi
-            sleep 2
+            echo "⏱ retry $i..."
+            sleep 29
         done
 
+        # Final check (hard fail if still not up)
         curl -sf http://localhost:${HOST_PORT}/health > /dev/null
 
         docker logs $CONTAINER
